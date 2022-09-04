@@ -1,0 +1,38 @@
+---
+title: "Segmentación de universidades en EEUU con enfasis en estudiantes de áreas relacionadas a la computación"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+Para realizar la segmentación utilizamos la base de datos encontrada en el link: https://data.world/exercises/cluster-analysis-exercise-2
+
+```{python}
+#| label: import de datos y librerías
+#| fig-cap: "A line plot on a polar axis"
+
+import numpy as np
+import pandas as pd
+import seaborn as sb
+from tabulate import tabulate 
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import pairwise_distances_argmin_min
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, ward
+
+
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+fig, ax = plt.subplots(
+  subplot_kw = {'projection': 'polar'} 
+)
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
