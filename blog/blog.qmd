@@ -1,16 +1,26 @@
 ---
-title: "Segmentación de universidades en EEUU con enfasis en estudiantes de áreas relacionadas a la computación"
+title: "Segmentación de universidades en EEUU con énfasis en estudiantes de areas relacionadas a la computación"
 format:
   html:
     code-fold: true
 jupyter: python3
+theme:
+          light: flatly
+          dark: darkly
+toc: true
 ---
+
+## Introducción
 
 Para realizar la segmentación utilizamos la base de datos encontrada en el link: https://data.world/exercises/cluster-analysis-exercise-2
 
+## Importe y análisis de datos
+
+A continuación procedemos a hacer el cargo de datos considerando aquellos suprimidos por privacidad como NaN: 
+
 ```{python}
-#| label: import de datos y librerías
-#| fig-cap: "A line plot on a polar axis"
+#| label: tbl-import-presentacion-inicial
+#| tbl-cap: Datos iniciales
 
 import numpy as np
 import pandas as pd
@@ -24,15 +34,101 @@ from sklearn.metrics import pairwise_distances_argmin_min
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram, ward
 
+#TODO: Explicar valores Nan
+#TODO: Revisar el tema de la low_memory=False
+datos_raw = pd.read_csv('CollegeScorecard.csv', na_values='PrivacySuppressed',low_memory=False)
 
-
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(
-  subplot_kw = {'projection': 'polar'} 
-)
-ax.plot(theta, r)
-ax.set_rticks([0.5, 1, 1.5, 2])
-ax.grid(True)
-plt.show()
+datos_raw.head(5)
 ```
+
+Como se puede ver en @tbl-import-presentacion-inicial la base de datos contiene 7804 observaciones y 1725 columnas.
+
+Para comenzar y como nuestro interés de acuerdo al objetivo *TODO: Esta justificación si es correcta* es tener la mayor cantidad de datos procederemos a descartar las columnas cuyo porcentaje de nulos sea mayor al (30%)
+
+```{python}
+
+def verificar_variables(nombre_archivo):
+  path = f'/content/gdrive/Shareddrives/TAE/{nombre_archivo}'
+  variable = pd.read_csv(path)
+  nombre_ingresos = list(variable['variable_name'])
+  df.loc[:, nombre_ingresos].info(verbose=True, show_counts=True)
+
+def utiles_por_porcentaje(df, columnas, porcentaje):
+  new_df = df[columnas]
+  total = len(new_df)
+  datos = {'columna': [], 'porcentaje_datos_nulos': [], 'datos_nulos': []}
+  for col in new_df.columns:
+    nulos = new_df[col].isna().sum()
+    datos['columna'].append(col)
+    datos['porcentaje_datos_nulos'].append(nulos/total)
+    datos['datos_nulos'].append(f'{nulos} de {total}')
+  nulos_columnas = pd.DataFrame(datos)
+  mayor_02 = nulos_columnas['porcentaje_datos_nulos'] <= porcentaje
+  utiles = nulos_columnas[mayor_02].sort_values(by='porcentaje_datos_nulos')
+  return utiles
+
+utiles_por_porcentaje(df=datos_raw, columnas=datos_raw.columns, porcentaje=0.3)
+
+```
+
+De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son los presentados en @tbl-col-iniciales 
+
+```{python}
+#| label: tbl-col-iniciales
+#| tbl-cap: Columnas iniciales a analizar
+
+from IPython.display import Markdown
+from tabulate import tabulate
+#TODO: Solucionar type de datos
+interes=['CURROPER', 'CONTROL', 'DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
+ 'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27', 'CIP11BACHL', 'CIP15BACHL',
+ 'CIP14BACHL', 'CIP27BACHL', 'PCTPELL']
+table = [[interes[0],type(interes[0]),"Explcación bien perrona"],
+         [interes[1],type(interes[1]),"Explcación bien perrona"],
+         [interes[2],type(interes[2]),"Explcación bien perrona"],
+         [interes[3],type(interes[3]),"Explcación bien perrona"],
+         [interes[4],type(interes[4]),"Explcación bien perrona"],
+         [interes[5],type(interes[5]),"Explcación bien perrona"],
+         [interes[6],type(interes[6]),"Explcación bien perrona"],
+         [interes[7],type(interes[7]),"Explcación bien perrona"],
+         [interes[8],type(interes[8]),"Explcación bien perrona"],
+         [interes[9],type(interes[9]),"Explcación bien perrona"],
+         [interes[10],type(interes[10]),"Explcación bien perrona"],
+         [interes[11],type(interes[10]),"Explcación bien perrona"],
+         [interes[12],type(interes[12]),"Explcación bien perrona"],
+         [interes[13],type(interes[13]),"Explcación bien perrona"],
+         ]
+Markdown(tabulate(
+  table, 
+  headers=["Nombre","Tipo de dato", "Resumen"]
+))
+```
+
+En cuanto al manejo de nulos resultantes como se puede ver en @tbl-col-iniciales-datos-perdidas la mayor perdida de datos se debe a las variables DEBT_MDN y GRAD_DEBT_MDN, que tienen entre un 14% y un 16% de datos nulos en comparación con los datos generales, al eliminar alrededor del 1% de datos nulos de las otras variables, estos porcentajes pasan a ser entre 12% y 14%
+
+```{python}
+#| label: tbl-col-iniciales-datos-perdidas
+#| tbl-cap: Datos perdidos
+
+
+col_interes_NaN_analisis_all=utiles_por_porcentaje(df=datos_raw, columnas=interes, porcentaje=0.3)
+
+col_interes_NaN_analisis_interes=utiles_por_porcentaje(df=datos_raw[interes].dropna(subset=["PCTPELL"]), columnas=interes, porcentaje=0.3)
+
+col_interes_NaN_analisis_interes
+
+colA=list(col_interes_NaN_analisis_all["porcentaje_datos_nulos"])
+colB=list(col_interes_NaN_analisis_interes["porcentaje_datos_nulos"])
+table1=list()
+
+for i in range(14):
+  table1.append([interes[i],colA[i],colB[i]])
+
+Markdown(tabulate(
+  table1, 
+  headers=["Variable","% NaN sobre todos los datos", "% NaN sobre datos sin nulos PCTPELL"]
+))
+
+
+```
+
