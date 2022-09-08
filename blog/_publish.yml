@@ -1,0 +1,4 @@
+- source: blog.qmd
+  quarto-pub:
+    - id: 1224ab39-4f37-4b41-9d21-032d2b792ae2
+      url: 'https://quartopub.com/sites/marloneau/segmentacion-de-universidades-en-eeuu-con-enfasis-en-estudiantes-de-areas-relacionadas-a-la-computacion'

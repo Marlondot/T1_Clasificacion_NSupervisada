@@ -4,6 +4,7 @@ format:
   html:
     code-fold: true
 jupyter: python3
+echo: false
 theme:
           light: flatly
           dark: darkly
@@ -83,20 +84,20 @@ from tabulate import tabulate
 interes=['CURROPER', 'CONTROL', 'DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
  'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27', 'CIP11BACHL', 'CIP15BACHL',
  'CIP14BACHL', 'CIP27BACHL', 'PCTPELL']
-table = [[interes[0],type(interes[0]),"Explcación bien perrona"],
-         [interes[1],type(interes[1]),"Explcación bien perrona"],
-         [interes[2],type(interes[2]),"Explcación bien perrona"],
-         [interes[3],type(interes[3]),"Explcación bien perrona"],
-         [interes[4],type(interes[4]),"Explcación bien perrona"],
-         [interes[5],type(interes[5]),"Explcación bien perrona"],
-         [interes[6],type(interes[6]),"Explcación bien perrona"],
-         [interes[7],type(interes[7]),"Explcación bien perrona"],
-         [interes[8],type(interes[8]),"Explcación bien perrona"],
-         [interes[9],type(interes[9]),"Explcación bien perrona"],
-         [interes[10],type(interes[10]),"Explcación bien perrona"],
-         [interes[11],type(interes[10]),"Explcación bien perrona"],
-         [interes[12],type(interes[12]),"Explcación bien perrona"],
-         [interes[13],type(interes[13]),"Explcación bien perrona"],
+table = [[interes[0],datos_raw[interes[0]].dtype,"Explcación bien perrona"],
+         [interes[1],datos_raw[interes[1]].dtype,"Explcación bien perrona"],
+         [interes[2],datos_raw[interes[2]].dtype,"Explcación bien perrona"],
+         [interes[3],datos_raw[interes[3]].dtype,"Explcación bien perrona"],
+         [interes[4],datos_raw[interes[4]].dtype,"Explcación bien perrona"],
+         [interes[5],datos_raw[interes[5]].dtype,"Explcación bien perrona"],
+         [interes[6],datos_raw[interes[6]].dtype,"Explcación bien perrona"],
+         [interes[7],datos_raw[interes[7]].dtype,"Explcación bien perrona"],
+         [interes[8],datos_raw[interes[8]].dtype,"Explcación bien perrona"],
+         [interes[9],datos_raw[interes[9]].dtype,"Explcación bien perrona"],
+         [interes[10],datos_raw[interes[10]].dtype,"Explcación bien perrona"],
+         [interes[11],datos_raw[interes[11]].dtype,"Explcación bien perrona"],
+         [interes[12],datos_raw[interes[12]].dtype,"Explcación bien perrona"],
+         [interes[13],datos_raw[interes[13]].dtype,"Explcación bien perrona"],
          ]
 Markdown(tabulate(
   table, 
@@ -104,12 +105,17 @@ Markdown(tabulate(
 ))
 ```
 
-En cuanto al manejo de nulos resultantes como se puede ver en @tbl-col-iniciales-datos-perdidas la mayor perdida de datos se debe a las variables DEBT_MDN y GRAD_DEBT_MDN, que tienen entre un 14% y un 16% de datos nulos en comparación con los datos generales, al eliminar alrededor del 1% de datos nulos de las otras variables, estos porcentajes pasan a ser entre 12% y 14%
+En cuanto al manejo de nulos resultantes como se puede ver en @tbl-col-iniciales-datos-perdidas la mayor perdida de datos se debe a las variables DEBT_MDN y GRAD_DEBT_MDN, que tienen entre un 14% y un 16% de datos nulos en comparación con los datos generales.
+
 
 ```{python}
 #| label: tbl-col-iniciales-datos-perdidas
 #| tbl-cap: Datos perdidos
 
+columnas_categoricas=['CURROPER', 'CONTROL','CIP11BACHL', 'CIP15BACHL',
+ 'CIP14BACHL', 'CIP27BACHL']
+columnas_numericas=['DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
+ 'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27','PCTPELL']
 
 col_interes_NaN_analisis_all=utiles_por_porcentaje(df=datos_raw, columnas=interes, porcentaje=0.3)
 
@@ -122,13 +128,44 @@ colB=list(col_interes_NaN_analisis_interes["porcentaje_datos_nulos"])
 table1=list()
 
 for i in range(14):
-  table1.append([interes[i],colA[i],colB[i]])
+  if interes[i] in columnas_categoricas:
+    table1.append([interes[i],"Variable categorica",colA[i]])
+  else:
+    table1.append([interes[i],"Variable numerica",colA[i]])
 
-Markdown(tabulate(
+"""Markdown(tabulate(
   table1, 
-  headers=["Variable","% NaN sobre todos los datos", "% NaN sobre datos sin nulos PCTPELL"]
-))
+  headers=["Variable","Tipo de variable", "% NaN"]
+))"""
+
+utiles_por_porcentaje(datos_raw,interes,0.3)
+```
+
+Por lo que ahora procederemos con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente.
+
+Luego de hacer la debida imputación podemos notar en @tbl-matriz-corr-1 que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.
 
 
+```{python}
+#| label: tbl-matriz-corr-1
+#| tbl-cap: Matriz de correlacion
+#| 
+datos_raw_interes=datos_raw[interes]
+columnas_categoricas=['CURROPER', 'CONTROL','CIP11BACHL', 'CIP15BACHL',
+ 'CIP14BACHL', 'CIP27BACHL']
+columnas_numericas=['DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
+ 'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27','PCTPELL']
+
+datos_interes_imputados=datos_raw_interes.copy()
+datos_interes_imputados[columnas_numericas] = datos_raw_interes[columnas_numericas].fillna(datos_raw_interes[columnas_numericas].median())
+
+for col in columnas_categoricas:
+  datos_interes_imputados[col] = datos_raw_interes[col].fillna(datos_raw_interes[col].mode()[0])
+
+
+corrMatrix=datos_interes_imputados.corr()
+sb.heatmap(corrMatrix, annot=True)
+plt.rcParams["figure.figsize"] = (20,20)
+plt.show
 ```
 
