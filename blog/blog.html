@@ -51,7 +51,10 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
-  <li><a href="#importe-y-análisis-de-datos" id="toc-importe-y-análisis-de-datos" class="nav-link" data-scroll-target="#importe-y-análisis-de-datos">Importe y análisis de datos</a></li>
+  <li><a href="#importe-y-análisis-de-datos" id="toc-importe-y-análisis-de-datos" class="nav-link" data-scroll-target="#importe-y-análisis-de-datos">Importe y análisis de datos</a>
+  <ul class="collapse">
+  <li><a href="#análisis-inicial-de-datos" id="toc-análisis-inicial-de-datos" class="nav-link" data-scroll-target="#análisis-inicial-de-datos">Análisis inicial de datos</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -81,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="importe-y-análisis-de-datos">Importe y análisis de datos</h2>
 <p>A continuación procedemos a hacer el cargo de datos considerando aquellos suprimidos por privacidad como NaN:</p>
 <div class="cell" data-execution_count="1">
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="1">
 <div id="tbl-import-presentacion-inicial" class="anchored">
 
 <div>
@@ -244,7 +247,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Como se puede ver en <a href="#tbl-import-presentacion-inicial">Table&nbsp;1</a> la base de datos contiene 7804 observaciones y 1725 columnas.</p>
 <p>Para comenzar y como nuestro interés de acuerdo al objetivo <em>TODO: Esta justificación si es correcta</em> es tener la mayor cantidad de datos procederemos a descartar las columnas cuyo porcentaje de nulos sea mayor al (30%)</p>
 <div class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="2">
 
 <div>
 
@@ -332,7 +335,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <p>De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son los presentados en <a href="#tbl-col-iniciales">Table&nbsp;2</a></p>
 <div class="cell" data-execution_count="3">
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div id="tbl-col-iniciales" class="anchored">
 <table class="table table-sm table-striped">
 <caption>Table&nbsp;2: Columnas iniciales a analizar</caption>
@@ -421,7 +424,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <p>En cuanto al manejo de nulos resultantes como se puede ver en <a href="#tbl-col-iniciales-datos-perdidas">Table&nbsp;3</a> la mayor perdida de datos se debe a las variables DEBT_MDN y GRAD_DEBT_MDN, que tienen entre un 14% y un 16% de datos nulos en comparación con los datos generales.</p>
 <div class="cell" data-execution_count="4">
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div id="tbl-col-iniciales-datos-perdidas" class="anchored">
 
 <div>
@@ -526,23 +529,37 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>Por lo que ahora procederemos con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente.</p>
-<p>Luego de hacer la debida imputación podemos notar en <strong>?@tbl-matriz-corr-1</strong> que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.</p>
-<div id="tbl-matriz-corr-1" class="cell tbl-parent quarto-layout-panel anchored" data-tbl-cap="Matriz de correlacion" data-execution_count="5">
-<div class="panel-caption table-caption">
-<p><strong>?(caption)</strong></p>
+<p>Por lo que se procede con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente, lo que nos deja con un conjunto de datos de 7804 observaciones y 14 columnas.</p>
+<section id="análisis-inicial-de-datos" class="level3">
+<h3 class="anchored" data-anchor-id="análisis-inicial-de-datos">Análisis inicial de datos</h3>
+<p>Comenzaremos con <a href="#fig-elephant">Figure&nbsp;1</a> donde se observan las densidades discriminadas por tipo de universidad (CONTROL). Para la variable deuda media acumulada se visualiza que la variabilidad de la deuda para los estudiantes de universidades privadas sin animo es mas elevada, a comparación de la publicas y privadas con animo de lucro, ademas la media de las universidades sin ánimo de lucro es mas elevada. En la variable que representa la proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado (PCTFLOAN) se que la distribución de los datos para los estidudiantes de universidades privadas, independientemente si son de ánimo de lucro o no tienen el mismo comportamiento, a comparación de los que pertecen a la institución pública. Por otro lado; para la variable que tiene el porcentaje de estudiantes que recivierón la beca PELL tienen distribuciones similares los que pertenecen a universidades privadas y públicas sin ánimo de lucro, por otro lado; las privadas con ánimo de lucro son las que tienen en promedio mayor porcentajes de becas y también una mayor dispersión.</p>
+<div id="fig-elephant" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="densidad1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Analisis de densidad</figcaption><p></p>
+</figure>
 </div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell" data-execution_count="15" style="flex-basis: 100.0%;justify-content: center;">
+<p>Podemos notar en la matriz de correlación <a href="#fig-matriz-corr-1">Figure&nbsp;2</a> que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.</p>
+<div id="fig-matriz-corr-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<div id="fig-matriz-corr-1-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
 <pre><code>&lt;function matplotlib.pyplot.show(close=None, block=None)&gt;</code></pre>
+<p></p><figcaption class="figure-caption">(a) Matriz de correlacion</figcaption><p></p>
+</figure>
+</div>
+<div class="cell-output cell-output-display">
+<div id="fig-matriz-corr-1-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="blog_files/figure-html/fig-matriz-corr-1-output-2.png" data-ref-parent="fig-matriz-corr-1" width="651" height="523" class="figure-img"></p>
+<p></p><figcaption class="figure-caption">(b)</figcaption><p></p>
+</figure>
 </div>
 </div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output cell-output-display quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
-<p><img src="blog_files/figure-html/tbl-matriz-corr-1-output-2.png" id="tbl-matriz-corr-1-2" class="img-fluid" width="651"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: <strong>?(caption)</strong></figcaption><p></p>
+</figure>
 </div>
-</div>
-</div>
+</section>
 </section>
 
 </main>

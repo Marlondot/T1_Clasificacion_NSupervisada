@@ -141,31 +141,42 @@ for i in range(14):
 utiles_por_porcentaje(datos_raw,interes,0.3)
 ```
 
-Por lo que ahora procederemos con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente.
+Por lo que se procede con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente,  lo que nos deja con un conjunto de datos de 7804 observaciones y 14 columnas.
 
-Luego de hacer la debida imputación podemos notar en @tbl-matriz-corr-1 que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.
+### Análisis inicial de datos
+
+Comenzaremos con @fig-elephant donde se observan las densidades discriminadas por tipo de universidad (CONTROL). Para la variable deuda media acumulada se visualiza que la variabilidad de la deuda para los estudiantes de universidades privadas sin animo es mas elevada, a comparación de la publicas y privadas con animo de lucro,  ademas la media de las universidades sin ánimo de lucro es mas elevada. En la variable  que representa la proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado (PCTFLOAN) se que la distribución de los datos para los estidudiantes de universidades privadas, independientemente si son de ánimo de lucro o no tienen el mismo comportamiento, a comparación de los que pertecen a la institución pública. Por otro lado; para la variable que tiene el porcentaje de estudiantes que recivierón la beca PELL  tienen distribuciones similares los que pertenecen a universidades privadas y públicas sin ánimo de lucro, por otro lado; las privadas con ánimo de lucro son las que tienen en promedio mayor porcentajes de becas y también una mayor dispersión.
+
+![Analisis de densidad](densidad1.png){#fig-elephant}
+
+Podemos notar en la matriz de correlación @fig-matriz-corr-1 que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.
 
 
 ```{python}
-#| label: tbl-matriz-corr-1
-#| tbl-cap: Matriz de correlacion
+#| label: fig-matriz-corr-1
+#| fig-cap: Matriz de correlacion
 #| 
+
 datos_raw_interes=datos_raw[interes]
 columnas_categoricas=['CURROPER', 'CONTROL','CIP11BACHL', 'CIP15BACHL',
  'CIP14BACHL', 'CIP27BACHL']
 columnas_numericas=['DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
  'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27','PCTPELL']
 
+"""
 datos_interes_imputados=datos_raw_interes.copy()
 datos_interes_imputados[columnas_numericas] = datos_raw_interes[columnas_numericas].fillna(datos_raw_interes[columnas_numericas].median())
 
 for col in columnas_categoricas:
   datos_interes_imputados[col] = datos_raw_interes[col].fillna(datos_raw_interes[col].mode()[0])
+"""
+
+datos_interes_imputados = pd.read_csv('sinNulos.csv',low_memory=False)
 
 
 corrMatrix=datos_interes_imputados.corr()
 sb.heatmap(corrMatrix, annot=True)
-plt.rcParams["figure.figsize"] = (20,20)
+plt.rcParams["figure.figsize"] = (25,25)
 plt.show
 ```
 
