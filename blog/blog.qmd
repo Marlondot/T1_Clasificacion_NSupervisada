@@ -154,8 +154,7 @@ Podemos notar en la matriz de correlación @fig-matriz-corr-1 que la deuda media
 
 ```{python}
 #| label: fig-matriz-corr-1
-#| fig-cap: Matriz de correlacion
-#| 
+#| fig-cap: "Matriz de correlacion"
 
 datos_raw_interes=datos_raw[interes]
 columnas_categoricas=['CURROPER', 'CONTROL','CIP11BACHL', 'CIP15BACHL',
@@ -174,9 +173,9 @@ for col in columnas_categoricas:
 datos_interes_imputados = pd.read_csv('sinNulos.csv',low_memory=False)
 
 
-corrMatrix=datos_interes_imputados.corr()
+corrMatrix=datos_interes_imputados[columnas_numericas].corr()
 sb.heatmap(corrMatrix, annot=True)
-plt.rcParams["figure.figsize"] = (25,25)
+#plt.rcParams["figure.figsize"] = (25,25)
 plt.show
 ```
 
