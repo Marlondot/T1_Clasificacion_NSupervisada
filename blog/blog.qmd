@@ -1,5 +1,18 @@
 ---
 title: "Segmentación de universidades en EEUU con énfasis en estudiantes de areas relacionadas a la computación"
+author:
+  - name: Daniel Daza Macias
+    email: dadazam@unal.edu.co
+  - name: Daniel Santiago Cadavid Montoya
+    email: dcadavid@unal.edu.co
+  - name: Jose Daniel Bustamante Arango
+    email: jobustamantea@unal.edu.co
+  - name: Marlon Calle Areiza
+    email: mcallea@unal.edu.co
+  - name: Ronald Gabriel Palencia
+    email: ropalencia@unal.edu.co
+  - name: Bill Gates
+    email: bill@gates.com
 format:
   html:
     code-fold: true
@@ -143,6 +156,8 @@ utiles_por_porcentaje(datos_raw,interes,0.3)
 
 Por lo que se procede con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente,  lo que nos deja con un conjunto de datos de 7804 observaciones y 14 columnas.
 
+Además de ello se procederá a hacer un One Hot Encoding a aquellas variables numéricas.
+
 ### Análisis inicial de datos
 
 Comenzaremos con @fig-elephant donde se observan las densidades discriminadas por tipo de universidad (CONTROL). Para la variable deuda media acumulada se visualiza que la variabilidad de la deuda para los estudiantes de universidades privadas sin animo es mas elevada, a comparación de la publicas y privadas con animo de lucro,  ademas la media de las universidades sin ánimo de lucro es mas elevada. En la variable  que representa la proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado (PCTFLOAN) se que la distribución de los datos para los estidudiantes de universidades privadas, independientemente si son de ánimo de lucro o no tienen el mismo comportamiento, a comparación de los que pertecen a la institución pública. Por otro lado; para la variable que tiene el porcentaje de estudiantes que recivierón la beca PELL  tienen distribuciones similares los que pertenecen a universidades privadas y públicas sin ánimo de lucro, por otro lado; las privadas con ánimo de lucro son las que tienen en promedio mayor porcentajes de becas y también una mayor dispersión.
@@ -176,6 +191,142 @@ datos_interes_imputados = pd.read_csv('sinNulos.csv',low_memory=False)
 corrMatrix=datos_interes_imputados[columnas_numericas].corr()
 sb.heatmap(corrMatrix, annot=True)
 #plt.rcParams["figure.figsize"] = (25,25)
-plt.show
+#plt.show
 ```
 
+Ahora se procederá a hacer un análisis de componentes principales sobre el dataset con variables categóricas encodeadas y variables numéricas normalizadas con min-max.
+
+
+```{python}
+#| label: tab-PCA-1
+#| tab-cap: Analisis de Componentes Principales
+
+#Sacando GRAD_DEBT_MDN
+imputados_OneHot=datos_interes_imputados.copy()
+
+columnas_numericas.remove("GRAD_DEBT_MDN")
+imputados_OneHot = imputados_OneHot.drop("GRAD_DEBT_MDN", axis=1)
+
+
+#Dummies de variables categirucas
+dummy_cols = ['CIP11BACHL', 'CIP15BACHL', 'CIP14BACHL', 'CIP27BACHL', 'CONTROL']
+
+for col in dummy_cols:
+  one_hot = pd.get_dummies(imputados_OneHot[col], prefix=col)
+  imputados_OneHot = imputados_OneHot.drop(col, axis=1)
+  imputados_OneHot = imputados_OneHot.join(one_hot)
+
+#Estandarización de las variables numericas
+imputados_OneHot[columnas_numericas]=(imputados_OneHot[columnas_numericas] - imputados_OneHot[columnas_numericas].min())/(imputados_OneHot[columnas_numericas].max()-imputados_OneHot[columnas_numericas].min())
+
+
+#Se procede a realizar el PCA
+
+from sklearn.decomposition import PCA
+
+
+pca = PCA()
+pca.fit(imputados_OneHot)
+ 
+
+from IPython.display import Markdown
+from tabulate import tabulate
+
+table2=list()
+acc_var_sum=0
+contador=1
+for i in pca.explained_variance_ratio_:
+  if acc_var_sum<0.95:
+    acc_var_sum+=i
+    table2.append(["Componente "+str(contador),i,acc_var_sum])
+    contador+=1
+  else:
+    break
+"""
+Markdown(tabulate(
+  table2, 
+  headers=["# Compenente","Varianza explicada", "Varianza acomulada"]
+))"""
+dfilo = pd.DataFrame(table2, columns=["# Compenente","Varianza explicada", "Varianza acomulada"])
+dfilo
+```
+
+Como taketarake take se puede ver que pin y pan.
+
+Se procede a hacer la curba de elbow
+
+```{python}
+#| label: fig-elbow-1
+#| fig-cap: Analisis de Elbow curve
+
+def elbow_curve(data, maxClusters = 15):
+
+  # rango de valores del parámetro a optimizar (cantidad de clusters)
+  maxClusters = range(1, maxClusters + 1)
+  inertias = []
+
+  # se ejecuta el modelo para el rango de clusters y se guarda la inercia
+  # respectiva obtenida para cada valor
+  for k in maxClusters:
+    kmeanModel = KMeans(n_clusters = k)
+    kmeanModel.fit(data)
+    inertias.append(kmeanModel.inertia_)
+  
+# Grafico de los resultados obtenidos para cada valor del rango
+  print("Valores: ",inertias)
+  plt.figure(figsize=(10, 8))
+  plt.plot(maxClusters, inertias, 'bx-')
+  plt.xlabel('k')
+  plt.ylabel('Inertia')
+  plt.title('The Elbow Method showing the optimal k')
+  plt.show()
+
+elbow_curve(np.array(imputados_OneHot))
+```
+```{python}
+#| label: fig-dendrogram-1
+#| fig-cap: Analisis de Dendrograma
+
+import scipy.cluster.hierarchy as shc
+from matplotlib import pyplot
+
+pyplot.figure(figsize=(15, 7))  
+pyplot.title("Dendrograma") 
+dend = shc.dendrogram(shc.linkage(imputados_OneHot, method='ward'),truncate_mode="lastp")# Dendrograma usando ward como método de linkage.
+ax = plt.gca()
+bounds = ax.get_xbound()
+ax.plot(bounds, [35, 35], '--', c='k')
+ax.text(bounds[1], 35, ' Seis grupos', va='center', fontdict={'size': 15})
+plt.xlabel("Cantidad de samples <(n)>, índice <i>")
+plt.ylabel("Distancias de grupos")
+plt.show()
+
+```
+
+
+```{python}
+#| label: fig-kmeans-1
+#| fig-cap: Analisis de Elbow curve
+
+
+from sklearn.cluster import KMeans
+
+
+kmeans = KMeans(n_clusters=6,).fit(imputados_OneHot)
+final=datos_interes_imputados.copy()
+final["Clusters"]=kmeans.labels_
+
+
+clustering= AgglomerativeClustering(n_clusters=5,linkage="ward")
+clustering.fit(imputados_OneHot)
+final["clusters"]=clustering.labels_
+
+
+final.to_csv('base1.csv', index=False)
+
+import plotly.express as px
+import plotly.graph_objects as go
+
+fig = px.scatter_3d(final, x="DEBT_MDN", y="PCTFLOAN", z="PCTPELL",color="clusters",size_max=0.001)
+fig.show()
+```
