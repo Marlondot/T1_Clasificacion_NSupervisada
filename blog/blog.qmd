@@ -11,8 +11,6 @@ author:
     email: mcallea@unal.edu.co
   - name: Ronald Gabriel Palencia
     email: ropalencia@unal.edu.co
-  - name: Bill Gates
-    email: bill@gates.com
 format:
   html:
     code-fold: true
@@ -25,6 +23,8 @@ toc: true
 ---
 
 ## Introducción
+
+El siguiente trabajo tiene como objetivo ofrecer información sobre segmentos de universidades a estudiantes que estén interesados como en bachelors degrees en computación, ingeniería, ingeniería y tecnología o matemáticas.
 
 Para realizar la segmentación utilizamos la base de datos encontrada en el link: https://data.world/exercises/cluster-analysis-exercise-2
 
@@ -55,9 +55,9 @@ datos_raw = pd.read_csv('CollegeScorecard.csv', na_values='PrivacySuppressed',lo
 datos_raw.head(5)
 ```
 
-Como se puede ver en @tbl-import-presentacion-inicial la base de datos contiene 7804 observaciones y 1725 columnas.
+Como se puede ver en @tbl-import-presentacion-inicial la base de datos contiene 1725 columnas además de 7804 observaciones.
 
-Para comenzar y como nuestro interés de acuerdo al objetivo *TODO: Esta justificación si es correcta* es tener la mayor cantidad de datos procederemos a descartar las columnas cuyo porcentaje de nulos sea mayor al (30%)
+Para comenzar y como nuestro interés de acuerdo al objetivo es tener la mayor cantidad de datos sin imputar relacionados a nuestro objetivo procederemos a seleccionar y estudiar las columnas cuyo porcentaje de nulos sea menor al (30%)
 
 ```{python}
 
@@ -85,11 +85,47 @@ utiles_por_porcentaje(df=datos_raw, columnas=datos_raw.columns, porcentaje=0.3)
 
 ```
 
-De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son los presentados en @tbl-col-iniciales 
+De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son las presentados en @tbl-col-iniciales donde para el caso de las variables terminadas en "BACHL" TODO: Como es la vuelta de estas variables
 
 ```{python}
 #| label: tbl-col-iniciales
 #| tbl-cap: Columnas iniciales a analizar
+
+
+def_var_dict={
+
+"CURROPER":"Esta variable explica si la universidad se encuentra operando. Tiene 2 valores (1) si la universidad está operando o (2) si no está operando",
+
+"CONTROL":"Tipo de institución; pública(0), privada sin ánimo de lucro(1) o privada con ánimo de lucro(2)",
+
+"DEBT_MDN":"Se trata de la deuda mediana de préstamos acumulada en la institución por todos los estudiantes prestatarios de préstamos federales que se separan (es decir, se gradúan o se retiran) en un año fiscal determinado, medida en el punto de separación (DEBT_MDN)",
+
+"PCTFLOAN":"Proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado",
+
+"GRAD_DEBT_MDN":"Deuda para los estudiantes que completaron sus estudios universitarios",
+
+"PCTPELL":"Esta variable es el porcentaje de estudiantes los cuales recibieron Pell Grants, el cual es una beca federal que reciben los estudiantes de ingresos bajos",
+
+"PCIP11":"Porcentaje de titulos otorgados en el campo de la computación",
+
+"PCIP15":"Porcentaje de titulos otorgados en el campo de la  ingeniería",
+
+"PCIP14":"Porcentaje de titulos otorgados en el campo de la  ingeniería y tecnología",
+
+"PCIP27":"Porcentaje de titulos en otorgados en el campo de la  matemáticas",
+
+
+"CIP11BACHL":"Identifíca si se el ofrece un bacheloor degree en computación y en que modalidad",
+
+"CIP15BACHL":"Identifíca si se el ofrece un bacheloor degree en ingeniería y en que modalidad",
+
+"CIP14BACHL":"Identifíca si se el ofrece un bacheloor degree en ingeniería y tecnología, y en que modalidad",
+
+"CIP27BACHL":"Identifíca si se el ofrece un bacheloor degree en matemáticas, y en que modalidad"
+
+}
+
+
 
 from IPython.display import Markdown
 from tabulate import tabulate
@@ -97,20 +133,20 @@ from tabulate import tabulate
 interes=['CURROPER', 'CONTROL', 'DEBT_MDN', 'PCTFLOAN', 'GRAD_DEBT_MDN',
  'PCIP11', 'PCIP15', 'PCIP14', 'PCIP27', 'CIP11BACHL', 'CIP15BACHL',
  'CIP14BACHL', 'CIP27BACHL', 'PCTPELL']
-table = [[interes[0],datos_raw[interes[0]].dtype,"Explcación bien perrona"],
-         [interes[1],datos_raw[interes[1]].dtype,"Explcación bien perrona"],
-         [interes[2],datos_raw[interes[2]].dtype,"Explcación bien perrona"],
-         [interes[3],datos_raw[interes[3]].dtype,"Explcación bien perrona"],
-         [interes[4],datos_raw[interes[4]].dtype,"Explcación bien perrona"],
-         [interes[5],datos_raw[interes[5]].dtype,"Explcación bien perrona"],
-         [interes[6],datos_raw[interes[6]].dtype,"Explcación bien perrona"],
-         [interes[7],datos_raw[interes[7]].dtype,"Explcación bien perrona"],
-         [interes[8],datos_raw[interes[8]].dtype,"Explcación bien perrona"],
-         [interes[9],datos_raw[interes[9]].dtype,"Explcación bien perrona"],
-         [interes[10],datos_raw[interes[10]].dtype,"Explcación bien perrona"],
-         [interes[11],datos_raw[interes[11]].dtype,"Explcación bien perrona"],
-         [interes[12],datos_raw[interes[12]].dtype,"Explcación bien perrona"],
-         [interes[13],datos_raw[interes[13]].dtype,"Explcación bien perrona"],
+table = [[interes[0],datos_raw[interes[0]].dtype,def_var_dict[interes[0]]],
+         [interes[1],datos_raw[interes[1]].dtype,def_var_dict[interes[1]]],
+         [interes[2],datos_raw[interes[2]].dtype,def_var_dict[interes[2]]],
+         [interes[3],datos_raw[interes[3]].dtype,def_var_dict[interes[3]]],
+         [interes[4],datos_raw[interes[4]].dtype,def_var_dict[interes[4]]],
+         [interes[5],datos_raw[interes[5]].dtype,def_var_dict[interes[5]]],
+         [interes[6],datos_raw[interes[6]].dtype,def_var_dict[interes[6]]],
+         [interes[7],datos_raw[interes[7]].dtype,def_var_dict[interes[7]]],
+         [interes[8],datos_raw[interes[8]].dtype,def_var_dict[interes[8]]],
+         [interes[9],datos_raw[interes[9]].dtype,def_var_dict[interes[9]]],
+         [interes[10],datos_raw[interes[10]].dtype,def_var_dict[interes[10]]],
+         [interes[11],datos_raw[interes[11]].dtype,def_var_dict[interes[11]]],
+         [interes[12],datos_raw[interes[12]].dtype,def_var_dict[interes[12]]],
+         [interes[13],datos_raw[interes[13]].dtype,def_var_dict[interes[13]]],
          ]
 Markdown(tabulate(
   table, 
@@ -195,20 +231,32 @@ sb.heatmap(corrMatrix, annot=True)
 ```
 
 Ahora se procederá a hacer un análisis de componentes principales sobre el dataset con variables categóricas encodeadas y variables numéricas normalizadas con min-max.
-
+TODO: Hablar antes de este parrafo de como se sacó las de DEBT mayores a 120000
 
 ```{python}
-#| label: tab-PCA-1
-#| tab-cap: Analisis de Componentes Principales
+#| label: tbl-princ-component-1
+#| tbl-cap: Analisis de Componentes Principales
 
+
+
+from scipy import stats
+#TODO: MIRAR ESTO
+data=datos_interes_imputados.copy()
+"""
+data["Z_CT"]=np.abs(stats.zscore(data["DEBT_MDN"]))
+data=data[data["Z_CT"]<=3]
+
+data=data.drop("Z_CT",axis=1)
+"""
+data=data[data["DEBT_MDN"]<120000]
 #Sacando GRAD_DEBT_MDN
-imputados_OneHot=datos_interes_imputados.copy()
+imputados_OneHot=data.copy()
 
 columnas_numericas.remove("GRAD_DEBT_MDN")
 imputados_OneHot = imputados_OneHot.drop("GRAD_DEBT_MDN", axis=1)
 
 
-#Dummies de variables categirucas
+#Dummies de variables categoricas
 dummy_cols = ['CIP11BACHL', 'CIP15BACHL', 'CIP14BACHL', 'CIP27BACHL', 'CONTROL']
 
 for col in dummy_cols:
@@ -227,10 +275,7 @@ from sklearn.decomposition import PCA
 
 pca = PCA()
 pca.fit(imputados_OneHot)
- 
 
-from IPython.display import Markdown
-from tabulate import tabulate
 
 table2=list()
 acc_var_sum=0
@@ -242,18 +287,22 @@ for i in pca.explained_variance_ratio_:
     contador+=1
   else:
     break
-"""
+
 Markdown(tabulate(
   table2, 
-  headers=["# Compenente","Varianza explicada", "Varianza acomulada"]
-))"""
-dfilo = pd.DataFrame(table2, columns=["# Compenente","Varianza explicada", "Varianza acomulada"])
-dfilo
+  headers=["Num. Componente","Varianza explicada", "Varianza acomulada"]
+))
+#dfilo = pd.DataFrame(table2, columns=["# Compenente","Varianza explicada", "Varianza acomulada"])
+#table2
 ```
 
-Como taketarake take se puede ver que pin y pan.
+Como se puede ver en @tbl-princ-component-1 poco más del 95% de la varianza comienza a ser explicada al tener 9 de las componentes principales por lo que se considera no hay una suficiente diferencia entre uso de variables para usar PCA, por lo que se continuará con el desarrollo del modelo con las 13 columnas escogidas.
 
-Se procede a hacer la curba de elbow
+## Desarrollo del modelo
+
+### Cantidad de clusters
+
+Para proceder con el desarrollo del modelo se comenzará escogiendo la cantidad de clusters o grupos en los que se segmentarán los datos. Para ello se hará un análisis de Elbow Curve:
 
 ```{python}
 #| label: fig-elbow-1
@@ -273,7 +322,7 @@ def elbow_curve(data, maxClusters = 15):
     inertias.append(kmeanModel.inertia_)
   
 # Grafico de los resultados obtenidos para cada valor del rango
-  print("Valores: ",inertias)
+  #print("Valores: ",inertias)
   plt.figure(figsize=(10, 8))
   plt.plot(maxClusters, inertias, 'bx-')
   plt.xlabel('k')
@@ -283,6 +332,11 @@ def elbow_curve(data, maxClusters = 15):
 
 elbow_curve(np.array(imputados_OneHot))
 ```
+
+En @fig-elbow-1 se puede notar que la pendiente de inercia de un cluster a otro comienza a ser menor desde que hay 6 cluster por lo que se concluye esta como la cantidad ideal.
+
+Por otra parte en @fig-dendrogram-1 se puede notar la agrupación en 6 grupos a través de agrupación aglomerativa con distancia ward en un dendrograma
+
 ```{python}
 #| label: fig-dendrogram-1
 #| fig-cap: Analisis de Dendrograma
@@ -303,17 +357,22 @@ plt.show()
 
 ```
 
+### Entrenamiento del modelo
+
+Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. 
+
+Entrenado el modelo en @fig-kmeans-1 se podrán notar las observaciones en un plano tridimensional donde el color representa el cluster al que pertenece la observación.
 
 ```{python}
 #| label: fig-kmeans-1
-#| fig-cap: Analisis de Elbow curve
+#| fig-cap: Observaciones en 3 dimensiones de los clusters
 
 
 from sklearn.cluster import KMeans
 
 
 kmeans = KMeans(n_clusters=6,).fit(imputados_OneHot)
-final=datos_interes_imputados.copy()
+final=data.copy()
 final["Clusters"]=kmeans.labels_
 
 
@@ -327,6 +386,8 @@ final.to_csv('base1.csv', index=False)
 import plotly.express as px
 import plotly.graph_objects as go
 
-fig = px.scatter_3d(final, x="DEBT_MDN", y="PCTFLOAN", z="PCTPELL",color="clusters",size_max=0.001)
+fig = px.scatter_3d(final, x="DEBT_MDN", y="PCTFLOAN", z="PCTPELL",color="Clusters",size_max=0.001)
 fig.show()
 ```
+
+## Analisis de resultados
