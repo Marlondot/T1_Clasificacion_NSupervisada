@@ -227,11 +227,30 @@ datos_interes_imputados = pd.read_csv('sinNulos.csv',low_memory=False)
 corrMatrix=datos_interes_imputados[columnas_numericas].corr()
 sb.heatmap(corrMatrix, annot=True)
 #plt.rcParams["figure.figsize"] = (25,25)
-#plt.show
+plt.show()
 ```
 
+### Trato de outliers
+
+Es importante notar que para una de las variables más importantes, DEBT_MDN, existen algunos valores que para nuestro estudio se considerarán outliers como se puede ver en @tbl-outliers-1, pues no están en nuestro interés, facilitando además la segmentación de los datos restantes:
+
+```{python}
+#| label: tbl-outliers-1
+#| tbl-cap: Analisis de Outliers
+
+from scipy import stats
+
+anal_outliers=datos_interes_imputados.copy()
+anal_outliers["Z_Score"]=np.abs(stats.zscore(anal_outliers["DEBT_MDN"]))
+outliers=anal_outliers[anal_outliers["DEBT_MDN"]>=120000]
+
+outliers[["DEBT_MDN","Z_Score"]]
+```
+
+
+### Analisis Principal de Componentes
+
 Ahora se procederá a hacer un análisis de componentes principales sobre el dataset con variables categóricas encodeadas y variables numéricas normalizadas con min-max.
-TODO: Hablar antes de este parrafo de como se sacó las de DEBT mayores a 120000
 
 ```{python}
 #| label: tbl-princ-component-1
@@ -239,7 +258,7 @@ TODO: Hablar antes de este parrafo de como se sacó las de DEBT mayores a 120000
 
 
 
-from scipy import stats
+
 #TODO: MIRAR ESTO
 data=datos_interes_imputados.copy()
 """
@@ -326,8 +345,8 @@ def elbow_curve(data, maxClusters = 15):
   plt.figure(figsize=(10, 8))
   plt.plot(maxClusters, inertias, 'bx-')
   plt.xlabel('k')
-  plt.ylabel('Inertia')
-  plt.title('The Elbow Method showing the optimal k')
+  plt.ylabel('Inercia')
+  plt.title('Analisis de Elbow Curve para el óptimo k')
   plt.show()
 
 elbow_curve(np.array(imputados_OneHot))
@@ -361,7 +380,7 @@ plt.show()
 
 Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. 
 
-Entrenado el modelo en @fig-kmeans-1 se podrán notar las observaciones en un plano tridimensional donde el color representa el cluster al que pertenece la observación.
+Entrenado el modelo en @fig-kmeans-1 se podrán notar las observaciones en un plano tridimensional donde se comparan las variables "DEBT_MDN", "PCTFLOAN" y "PCTPELL" de cada observación y donde el color representa el cluster al que pertenece cada observación.
 
 ```{python}
 #| label: fig-kmeans-1
