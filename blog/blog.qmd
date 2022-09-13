@@ -399,7 +399,7 @@ clustering= AgglomerativeClustering(n_clusters=5,linkage="ward")
 clustering.fit(imputados_OneHot)
 final["clusters"]=clustering.labels_
 
-
+#Se exporta resultados
 final.to_csv('base1.csv', index=False)
 
 import plotly.express as px
@@ -410,3 +410,126 @@ fig.show()
 ```
 
 ## Analisis de resultados
+
+Generada la base de datos con los resultados se comienza a hacer el análisis sobre ella. Es de importancia hacer notar que dado el funcionamiento de renderizado de quarto es necesario exportar los resultados generados y usarlos para mantener una constancia en los análisis sin tener problemas por la generación aleatoria de los modelos.
+
+### Analisis generales
+
+En el gráfico @fig-bachl-1 se muestran las diferencias con respecto a las carreras (11: Computación, 14: Ingeniería, 15: Ingeniería y tecnología, 27: Matemáticas) brindadas por modalidad (0: No se oferta, 1: Presencial, 2: Virtual) para cada tipo de universidad obtenido con lo realizado previamente.
+
+Entre las cosas a notar encontramos:
+*   Una similaridad en los grupos de universidades 0, 2 y 5 dado que la mayoría de las universidades que los conforman no brindan ninguno de los 4 tipos de campos.
+*   Notamos una similaridad en los grupos 3 y 4 dado que tienen aproximadamente 300 universidades que no ofertan pregrado de inegeniería e ingeniería y tecnología.
+*   Una gran mayoría de las universidades que brindan las diferentes carreras en la modalidad virtual se encuentran en el grupo 3.
+*   La gran mayoría de universidades que ofrecen computación e ingeniería y tecnología de forma presencial se encuentran en el cluster 1
+*   En el cluster 4 es el grupo en donde se encuentran ofertadas todas las carreras de interés en modalidad presencial.
+
+![Analisis de carreras ofrecidas y modalidad](analisis1BACHL.png){#fig-bachl-1}
+
+Por otra parte en @fig-cont-1 se muestran las diferentes variables continuas (deuda media, deuda media de graduados, procentaje de estudiantes que recibieron préstamo federal y porcentaje de estudiantes con beca Pell Grants) contra cada uno de los clusters, donde se puede notar que:
+
+*   Los clusters 3 y 4 es donde hay un mayor cantidad de universidades cuyos estudiantes tienen una deuda de endeudamiento media alto, con respecto a los estudiantes de las otros grupos de universidades. Por otro lado, los clusters 0 y 2 contienen a las universidades cuyos estudiantes tienen menor deuda media.
+*   El cluster 0 es en el que las universidades tienen un porcentaje medio menor de estudiantes con préstamos federal con respecto a los otros clusters. Sin embargo, el porcentaje de estudiantes con préstamo federal es muy variable, ya que presenta una mayor dispersión. Para los otros clusters no se ve una diferencia visual significativa entre el procentaje de estudiantes con préstamo.
+*   Los clusters 1 y 2 son los que contienen las universidades con mayor porcentaje de estudiantes con beca Pell Grants con respecto a los demás clusters.
+
+![Analisis por cluster de variables continuas](analisis2Continuas.png){#fig-cont-1}
+
+Además en @fig-control-1 se muestra  el porcentaje de cada tipo de universidad dentro de cada cluster. Siendo 1 universidad pública, 2 universidad privada sin ánimo de lucro y 3 universidad privada con ánimo de lucro. Se puede observar que:
+
+
+*   El cluster 0 se compone únicamente de universidades públicas.
+*   El cluster 1 se compone en su mayoría de universidades privadas con ánimo de lucro, sin embargo también contiene algunas sin ánimo de lucro y públicas en menor medida.
+*   El cluster 2 se compone únicamente de universidades privadas con ánimo de lucro.
+*   El cluster 3 tiene en su mayoría universidades públicas y privadas sin ánimo de lucro.
+*   El cluster 4 tiene en mayor parte universidades universidades privadas sin ánimo de lucro y no tiene privadas con ánimo de lucro.
+*   El cluster 5 se compone únicamente de universidades sin ánimo de lucro.
+
+![Analisis por cluster de tipo de universidades](analisis3Control.png){#fig-control-1}
+
+En @fig-graduados-1 se muestra el porcentaje de estudiantes graduados por carrera en cada universidad sólo considerando aquellas universidades que ofrecen los títulos. Donde PCIP11 corresponde a los títulos otorgados en el campo de la computación, PCIP14 en el campo de la ingeniería, PCIP15 en el campo de la ingeniería y tecnología y PCIP27 en el campo de las matemáticas.
+De las gráficas se puede ver que:
+
+
+*   El cluster 1 está compuesto por universidades con mayor porcentaje de titulos otorgados en los campos de computación e ingeniería y tecnología con respecto a los demas clusters.
+*   En general las universidades con mas títulos otorgados en computación e ingeniería y tecnología se encuentran en los clusters 1, 2 y 5 en ese orden de mayor a menor.
+*   El cluster 5 es donde, con gran diferencia, están las universidades ofertantes con mayor porcentaje de títulos en ingeniería otorgados.
+*   Respecto al campo de las matemáticas es notable que todos los clusters tienen universidades con titulos otorgados en este campo, salvo el cluster 1 y siendo el cluster 2 el de mayor porcentaje de títulos entregados.
+
+![Analisis por cluster de porcentaje de graduados sólo universidades que ofrecen](analisis3Graduados.png){#fig-graduados-1}
+
+Por otra parte en @fig-graduados-2 se puede ver la comparación de porcentajes medios de graduados dada la carrera para cada cluster. Se puede notar:
+
+*   El cluster 1 está compuesto por universidades con mayor porcentaje de títulos otorgados en los campos de computación e ingeniería y tecnología con respecto a los demas clusters.
+*   Los clusters 3 y 4 están compuestos por universidades con mayor porcentaje medio de títulos otorgados con respecto a los demás clusters en el área de matemáticas, donde es casi nulo como es el caso del 2 que a pesar de tener mayor porcentaje entre universidades que ofrecen la carrera en general tiene un porcentaje muy bajo en relación con los otros.
+*   Estos clusters (3 y 4) además, son quienes tienen mayor porcentaje de graduados medio en carreras relacionadas a la ingeniería (PCIP14) de manera general.
+
+![Analisis por cluster de porcentaje de graduados medio](analisis5Graduados.png){#fig-graduados-2}
+
+### Diferencias clusters no ofertantes 0, 2 y 5.
+
+Comparando los clusters en @fig-graduados-3 de mayor similitud en los que la mayoría de universidades no ofertan las carreras de interés tenemos que, de las universidades que los ofertan se puede ver que:
+
+*   En el campo de la computación es donde más títulos se otorgan en comparación a los otros campos.
+*   El cluster 0 (en el menos se ofertan los campos de interés) es donde se presenta la mayor cantidad de graduados en los pregrados de computación e ingeniería y tecnología.
+*   El cluster 2 es el de menor media de gradudados en matemáticas en comparación con el cluster 0 y 5.
+*   El cluster 5 es donde se presenta menor cantidad de graduados en computación e ingeniería en comparación a los clusters 0 y 2.
+
+![Analisis clusters 0, 2 y 5 de porcentaje de graduados medio](analisis6Graduados.png){#fig-graduados-3}
+
+en @fig-dinero-1 se observan las diferencias visuales que tienen las variables: deuda media acumulada de los estudiates que terminaron la carrera (DEBT_MDN), deuda media acumulada de los estudiates que no terminaron la carrera (GRAN_DEBT_MDN), porcentaje de estudiantes que ganaron la beca PELL y tasa de endeudamiento de los estudiantes de la institución (PCTFLOAN).
+
+En la parte superior derecha se visualiza una diferencia que existe entre el cluster 0 respecto al 2 y 3, para la tasa de endeudamiento, además, se puede notar que entre el cluster 1 y 2 no se evidencia una diferencia significativa visual, por lo que se asume que tienen caracteristicas muy similares.
+
+Para la variable que representa el porcentaje  de estudiantes que ganarón la beca se ve una diferencia en cluster 2, respecto al 0 y el 5, ademas la dispersión de los datos en este grupo es muy baja, por lo que se concluye que es un grupo homogeneo.
+
+![Analisis clusters 0, 2 y 5 de porcentaje de graduados medio](analisis7Money.png){#fig-dinero-1}
+
+### Caracterización de los clusters
+
+*   **Cluster 0:** Compuesto por universidades públicas, en donde está el menor porcentaje de estudiantes con un préstamo federal y por tanto la menor deuda media. Sin embargo es el cluster que contiene las universidades con menor oferta de las carreras de interés, por ende es donde menor cantidad de estudiantes graduados en dichos pregrados hay.
+*   **Cluster 1:** Compuesto por universidades en su mayoría privadas con ánimo de lucros y poseen un mayor porcentaje de estudiantes tanto con préstamo federal como con beca Pell Grants, debido a esto sus estudiantes tienen una deuda media mayor que los clusters 0 y 2 y es el de mayor deuda media de sus estudiantes graduados (junto con los clusters 3 y 4). En este cluster es donde se encuentran las universidades con mas oferta presencial de los campos de computación e ingeniería y tecnología, además es donde mayor porcentaje de estudiantes graduados en computación, ingeniería y tecnología y matemáticas hay.
+*   **Cluster 2:** Compuesto únicamente por universidades privadas con ánimo de lucro similar al cluster 0 contiene las universidas con menor oferta de las carreras y menor deuda media de sus estudiantes, pero tiene una mayor oferta que el cluster 0 de computación en la modalidad virtual. Tiene un porcentaje de estudiantes con préstamo federal muy similar a los clusters 3, 4 y 5 y es el segundo en cuanto a estudiantes con beca Pell Grants. Respecto a los graduados, es el de menor porcentaje de estos en las carreras salvo en computación y en ingeniería y tecnología que es el segundo mayor.
+*   **Cluster 3:** Compuesto en su mayoría por universidades públicas y privadas sin ánimo de lucro las cuales no ofertan las carreras de forma presencial, únicamente virtual. A pesar de que tiene un porcentaje similar a los clusters 2, 4 y 5 de estudiantes con préstamos federales, es el cluster con universidades cuyos estudiantes tienen la segunda mayor deuda media esto quizá provocado porque también tiene el segundo menor porcentaje de estudiantes con beca Pell Grants. Sus universidades son las de menor porcentaje de graduados (junto con el cluster  4) salvo en mátemáticas que tiene el segundo mayor porcentaje de graduados en este campo.
+*   **Cluster 4:** Compuesto únicamente por universidades públicas y privadas sin ánimo de lucro (siendo mayor la cantidad de éstas ultimas en el cluster) las cuales ofertan las carreras únicamente de forma presencial. Como en el cluster 3 tiene un porcentaje similar de estudiantes con préstamos federales a los clusters 2 y 5, pero es el cluster con universidades cuyos estudiantes tienen la mayor deuda media, ocasionado probablemente también porque es el de menor porcentaje de estudiantes con beca Pell Grants. Respecto al porcentaje de universidades graduados en sus universidades, ocurre aproximadamente lo mismo que en el cluster 3.
+*   **Cluster 5:** Compuesto únicamente por universidades privadas sin ánimo de lucro, las universidades dentro de este grupo son similares en cuanto a su no oferta de las carreras como los clusters 0 y 2, sin embargo tienen un poco más de oferta en los campos de computación y matemáticas en las modalidades presencial y virtual que estos 2 clusters anteriormente mencionados. Su deuda media y porcentaje de estudiantes con préstamo federal son similares a los de cluster 1 y 4 respectivamente y es el tercero en cuanto a mayor media de porcentaje de estudiantes con becas Pell Grants. Destaca en que es el cluaster con mayor porcentaje de graduados en ingeniería y en general es el tercero con mayor porcentaje de estudiantes graduados para las demás carreras.
+
+## Concluciones
+
+*   A quienes estén interesados en las carreras de computación, ingeniería, ingeniería y tecnología, y matemáticas se les recomienda poner especial atención a las clusters 1, 3 y 4, siendo 1 y 4 recomendados si la persona prefiere una educación presencial y el 3 si prefiere una educación virtual.
+*   Si se está interesado en obtener una beca Pell Grant poner atención a las universidades del cluster 1 y 2, que tienen mayor porcentaje medio de estudiantes con esta beca.
+*   Si el estudiante no está interesado en tener una deuda muy grande se recomiendan las universidades agrupadas en los clusters 0 y 2, pero se debe tener en cuenta que estos a su vez contienen pocas universidades ofertantes de los campos de interés.
+*   Si el estudiante está interesado en universidades privadas debería prestar especial atención a aquellas contenidas en los clusters 2 y 5. En caso de que estuviera interesado en universidades públicas debería prestar especial atención a aquellas contenidas en el cluster 0 y en el cluster 3.
+*   Dado el porcentaje medio de graduados sobre todas las universidades, si el estudiante está interesado en un pregrado de matemáticas debería prestar atención a aquellas universidades contenidas en los clusters 3 y 4. De igual manera si está interasado en el campo de la computación o la ingeniería y tecnología se recomienda prestar especial atención a aquellas universidades contenidas en el cluster 1. Similarmente para el caso de ingeniería se recomienda prestar atención a aquellas universidades contenidas en el cluster 4.
+
+## Clusterización para segmentación de Universidades Colombianas 
+
+Colombia es un país donde la desigualdad de acceso a la educación  es un problema que ha venido creciendo. Teniendo en cuenta que la educación en una nación es una herramienta vital para su desarrollo en diferentes campos como el tecnológico, social, económico entre otros. Para acceder a los pocos trabajos altamente remunerados en el país, una persona debe tener la educación o las conexiones apropiadas y ambas cosas se adquieren en espacios de interacción específicos. En particular la inmensa mayoría de la educación y las conexiones que uno acumula antes de su entrada al mundo laboral se generan en los colegios y universidades a los que uno asiste. Sin embargo, no todos los colegios y universidades ofrecen la misma cantidad y calidad de educación y conexiones. Es por esto que se desarrollará un proyecto donde se clasificaron las diferentes universidades según sus características: calidad de los egresados, facilidad de ingreso, oportunidades de becas, modalidad, carreras ofertadas, entre otros factores.
+
+El **objetivo general** de este proyecto es responder a preguntas que se generan en los padres de los estudiantes que buscan brindarles el acceso a la educación superior o de los mismos estudiantes.
+
+### Objetivos específicos
+
+Los objetivos específicos son:
+
+*   Encontrar las tablas de datos necesarias para responder las preguntas planteadas anteriormente.
+*   Categorizar las  diferentes universidades que tiene el país.
+*   Generar un herramienta que ayudaría al ministerio de educación a identificar las desigualdades que existen en las universidades del país.
+
+### Base de datos
+
+Las tablas necesarias para el desarrollo de este proyecto son:
+
+*   La base de datos que contienen los resultados de las pruebas saber Pro
+*   La base de datos que genera el Shanghai Ranking.
+*   Una base de datos que contiene la siguiente información: Carreras ofertadas, tipo de institución, relaciones internacionales, entre otras.
+
+### Metodología
+
+Para el desarrollo de este proyecto los siguientes pasos:
+
+1)	Comprensión del problema de desigualdad de educación superior que tiene el país.
+2)	Recolección de los datos y entendimiento de cada una de sus columnas.
+1)	Exploración, depuración y análisis descriptivo de la tablas
+2)	Planteamiento de los diferentes cluster según las características similares que presentan las universidades.
+3)	Análisis de los resultados obtenidos en el paso anterior.
+4)	Conclusiones y recomendaciones.
