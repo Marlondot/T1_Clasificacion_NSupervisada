@@ -24,7 +24,7 @@ toc: true
 
 ## Introducción
 
-El siguiente trabajo tiene como objetivo ofrecer información sobre segmentos de universidades a estudiantes que estén interesados como en bachelors degrees en computación, ingeniería, ingeniería y tecnología o matemáticas.
+El siguiente trabajo tiene como objetivo ofrecer información sobre segmentos de universidades a estudiantes que estén interesados en pregados relacionados con la computación, ingeniería, ingeniería y tecnología o matemáticas.
 
 Para realizar la segmentación utilizamos la base de datos encontrada en el link: https://data.world/exercises/cluster-analysis-exercise-2
 
@@ -85,7 +85,8 @@ utiles_por_porcentaje(df=datos_raw, columnas=datos_raw.columns, porcentaje=0.3)
 
 ```
 
-De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son las presentados en @tbl-col-iniciales donde para el caso de las variables terminadas en "BACHL" TODO: Como es la vuelta de estas variables
+De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se concluye que de las 351 variables resultantes las más adecuadas, en un principio, para ofrecer un producto son las presentadas en @tbl-col-iniciales donde para el caso de las variables terminadas en "BACHL" existen 3 posibles valores: 0 si el programa no se ofrece, 1 si programa se ofrece y 2 si el programa solo se ofrece a través de un programa de educación a distancia exclusivamente.
+
 
 ```{python}
 #| label: tbl-col-iniciales
@@ -196,11 +197,11 @@ Además de ello se procederá a hacer un One Hot Encoding a aquellas variables n
 
 ### Análisis inicial de datos
 
-Comenzaremos con @fig-elephant donde se observan las densidades discriminadas por tipo de universidad (CONTROL). Para la variable deuda media acumulada se visualiza que la variabilidad de la deuda para los estudiantes de universidades privadas sin animo es mas elevada, a comparación de la publicas y privadas con animo de lucro,  ademas la media de las universidades sin ánimo de lucro es mas elevada. En la variable  que representa la proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado (PCTFLOAN) se que la distribución de los datos para los estidudiantes de universidades privadas, independientemente si son de ánimo de lucro o no tienen el mismo comportamiento, a comparación de los que pertecen a la institución pública. Por otro lado; para la variable que tiene el porcentaje de estudiantes que recivierón la beca PELL  tienen distribuciones similares los que pertenecen a universidades privadas y públicas sin ánimo de lucro, por otro lado; las privadas con ánimo de lucro son las que tienen en promedio mayor porcentajes de becas y también una mayor dispersión.
+Comenzaremos con @fig-elephant donde se observan las densidades discriminadas por tipo de universidad (CONTROL). Para la variable deuda media acumulada se visualiza que la variabilidad de la deuda para los estudiantes de universidades privadas sin animo es mas elevada, a comparación de la publicas y privadas con animo de lucro,  ademas la media de las universidades sin ánimo de lucro es mas elevada. En la variable  que representa la proporción de estudiantes universitarios que recibieron préstamos federales en un año determinado (PCTFLOAN) se nota que la distribución de los datos para los estudiantes de universidades privadas, independiente de si son de ánimo de lucro o no, tiene el mismo comportamiento, en comparación con los que pertenecen a instituciones públicas. Por otro lado la variable que tiene el porcentaje de estudiantes que recibieron la beca PELL tienen distribuciones similares para quienes pertenecen a universidades privadas y públicas sin ánimo de lucro, a su vez las privadas con ánimo de lucro tienen en promedio mayores porcentajes de becas y también una mayor dispersión.
 
 ![Analisis de densidad](densidad1.png){#fig-elephant}
 
-Podemos notar en la matriz de correlación @fig-matriz-corr-1 que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar unas correlaciones moderadas en otros pares de variables, son embargo se tomo la decisión de dejarlar, dado que son variables que contienen información inportante en el proceso de clusterización.
+Podemos notar en la matriz de correlación @fig-matriz-corr-1 que la deuda media acumulada de todos los estudiantes (DEBT_MDN) y la deuda media acumulada de los estudiantes que terminaron la carrera (GRAD_DEBT_MDN) presenta una correlación de 0.77, por lo que procedera a sacar una de ellas (GRAD_DEBT_MDN) para eliminar redundancia del conjunto de caracteristicas con las que se estan trabajando en el proceso de clusterización. También se logra observar algunas correlaciones moderadas en otros pares de variables sin embargo se toma la decisión de mantenerlas, pues son variables que contienen información importante para el proceso de clusterización.
 
 
 ```{python}
@@ -248,7 +249,7 @@ outliers[["DEBT_MDN","Z_Score"]]
 ```
 
 
-### Analisis Principal de Componentes
+### Análisis Principal de Componentes
 
 Ahora se procederá a hacer un análisis de componentes principales sobre el dataset con variables categóricas encodeadas y variables numéricas normalizadas con min-max.
 
@@ -315,7 +316,7 @@ Markdown(tabulate(
 #table2
 ```
 
-Como se puede ver en @tbl-princ-component-1 poco más del 95% de la varianza comienza a ser explicada al tener 9 de las componentes principales por lo que se considera no hay una suficiente diferencia entre uso de variables para usar PCA, por lo que se continuará con el desarrollo del modelo con las 13 columnas escogidas.
+Como se puede ver en @tbl-princ-component-1 poco más del 95% de la varianza comienza a ser explicada al tener 10 de las componentes principales por lo que se considera no hay una suficiente diferencia entre cantidad de variables que justifiquen el uso de PCA, por lo que se continuará con el desarrollo del modelo con las 13 columnas escogidas.
 
 ## Desarrollo del modelo
 
@@ -409,28 +410,29 @@ fig = px.scatter_3d(final, x="DEBT_MDN", y="PCTFLOAN", z="PCTPELL",color="Cluste
 fig.show()
 ```
 
-## Analisis de resultados
+## Análisis de resultados
 
 Generada la base de datos con los resultados se comienza a hacer el análisis sobre ella. Es de importancia hacer notar que dado el funcionamiento de renderizado de quarto es necesario exportar los resultados generados y usarlos para mantener una constancia en los análisis sin tener problemas por la generación aleatoria de los modelos.
 
-### Analisis generales
+### Análisis generales
 
 En el gráfico @fig-bachl-1 se muestran las diferencias con respecto a las carreras (11: Computación, 14: Ingeniería, 15: Ingeniería y tecnología, 27: Matemáticas) brindadas por modalidad (0: No se oferta, 1: Presencial, 2: Virtual) para cada tipo de universidad obtenido con lo realizado previamente.
 
 Entre las cosas a notar encontramos:
+
 *   Una similaridad en los grupos de universidades 0, 2 y 5 dado que la mayoría de las universidades que los conforman no brindan ninguno de los 4 tipos de campos.
 *   Notamos una similaridad en los grupos 3 y 4 dado que tienen aproximadamente 300 universidades que no ofertan pregrado de inegeniería e ingeniería y tecnología.
 *   Una gran mayoría de las universidades que brindan las diferentes carreras en la modalidad virtual se encuentran en el grupo 3.
 *   La gran mayoría de universidades que ofrecen computación e ingeniería y tecnología de forma presencial se encuentran en el cluster 1
-*   En el cluster 4 es el grupo en donde se encuentran ofertadas todas las carreras de interés en modalidad presencial.
+*   El cluster 4 es el grupo en donde se encuentran ofertadas todas las carreras de interés en modalidad presencial.
 
 ![Analisis de carreras ofrecidas y modalidad](analisis1BACHL.png){#fig-bachl-1}
 
 Por otra parte en @fig-cont-1 se muestran las diferentes variables continuas (deuda media, deuda media de graduados, procentaje de estudiantes que recibieron préstamo federal y porcentaje de estudiantes con beca Pell Grants) contra cada uno de los clusters, donde se puede notar que:
 
-*   Los clusters 3 y 4 es donde hay un mayor cantidad de universidades cuyos estudiantes tienen una deuda de endeudamiento media alto, con respecto a los estudiantes de las otros grupos de universidades. Por otro lado, los clusters 0 y 2 contienen a las universidades cuyos estudiantes tienen menor deuda media.
-*   El cluster 0 es en el que las universidades tienen un porcentaje medio menor de estudiantes con préstamos federal con respecto a los otros clusters. Sin embargo, el porcentaje de estudiantes con préstamo federal es muy variable, ya que presenta una mayor dispersión. Para los otros clusters no se ve una diferencia visual significativa entre el procentaje de estudiantes con préstamo.
-*   Los clusters 1 y 2 son los que contienen las universidades con mayor porcentaje de estudiantes con beca Pell Grants con respecto a los demás clusters.
+*   En los clusters 3 y 4 hay una mayor cantidad de universidades cuyos estudiantes tienen una deuda de endeudamiento media alto, con respecto a los estudiantes de las otros grupos de universidades. Por otro lado, los clusters 0 y 2 contienen a las universidades cuyos estudiantes tienen menor deuda media.
+*   En el cluster 0 las universidades tienen un porcentaje medio menor de estudiantes con préstamos federal con respecto a los otros clusters. Sin embargo, el porcentaje de estudiantes con préstamo federal es muy variable, ya que presenta una mayor dispersión. Para los otros clusters no se ve una diferencia visual significativa entre el procentaje de estudiantes con préstamo.
+*   Los clusters 1 y 2 contienen las universidades con mayor porcentaje de estudiantes medio con beca Pell Grants con respecto a los demás clusters.
 
 ![Analisis por cluster de variables continuas](analisis2Continuas.png){#fig-cont-1}
 
@@ -450,12 +452,12 @@ En @fig-graduados-1 se muestra el porcentaje de estudiantes graduados por carrer
 De las gráficas se puede ver que:
 
 
-*   El cluster 1 está compuesto por universidades con mayor porcentaje de titulos otorgados en los campos de computación e ingeniería y tecnología con respecto a los demas clusters.
-*   En general las universidades con mas títulos otorgados en computación e ingeniería y tecnología se encuentran en los clusters 1, 2 y 5 en ese orden de mayor a menor.
+*   El cluster 1 está compuesto por universidades ofertantes con mayor porcentaje de titulos otorgados en los campos de computación e ingeniería y tecnología con respecto a los demas clusters.
+*   En general las universidades ofertantes con mas títulos otorgados en computación e ingeniería y tecnología se encuentran en los clusters 1, 2 y 5 en ese orden de mayor a menor.
 *   El cluster 5 es donde, con gran diferencia, están las universidades ofertantes con mayor porcentaje de títulos en ingeniería otorgados.
-*   Respecto al campo de las matemáticas es notable que todos los clusters tienen universidades con titulos otorgados en este campo, salvo el cluster 1 y siendo el cluster 2 el de mayor porcentaje de títulos entregados.
+*   Respecto al campo de las matemáticas es notable que todos los clusters tienen universidades ofertantes con titulos otorgados en este campo, salvo el cluster 1 y siendo el cluster 2 el de mayor porcentaje de títulos entregados.
 
-![Analisis por cluster de porcentaje de graduados sólo universidades que ofrecen](analisis3Graduados.png){#fig-graduados-1}
+![Analisis por cluster de porcentaje de graduados sólo universidades ofertantes](analisis3Graduados.png){#fig-graduados-1}
 
 Por otra parte en @fig-graduados-2 se puede ver la comparación de porcentajes medios de graduados dada la carrera para cada cluster. Se puede notar:
 
@@ -476,11 +478,11 @@ Comparando los clusters en @fig-graduados-3 de mayor similitud en los que la may
 
 ![Analisis clusters 0, 2 y 5 de porcentaje de graduados medio](analisis6Graduados.png){#fig-graduados-3}
 
-en @fig-dinero-1 se observan las diferencias visuales que tienen las variables: deuda media acumulada de los estudiates que terminaron la carrera (DEBT_MDN), deuda media acumulada de los estudiates que no terminaron la carrera (GRAN_DEBT_MDN), porcentaje de estudiantes que ganaron la beca PELL y tasa de endeudamiento de los estudiantes de la institución (PCTFLOAN).
+En @fig-dinero-1 se observan las diferencias visuales que tienen las variables: deuda media acumulada de los estudiates que terminaron la carrera (DEBT_MDN), deuda media acumulada de los estudiantes que no terminaron la carrera (GRAN_DEBT_MDN), porcentaje de estudiantes que ganaron la beca PELL y tasa de endeudamiento de los estudiantes de la institución (PCTFLOAN).
 
 En la parte superior derecha se visualiza una diferencia que existe entre el cluster 0 respecto al 2 y 3, para la tasa de endeudamiento, además, se puede notar que entre el cluster 1 y 2 no se evidencia una diferencia significativa visual, por lo que se asume que tienen caracteristicas muy similares.
 
-Para la variable que representa el porcentaje  de estudiantes que ganarón la beca se ve una diferencia en cluster 2, respecto al 0 y el 5, ademas la dispersión de los datos en este grupo es muy baja, por lo que se concluye que es un grupo homogeneo.
+Para la variable que representa el porcentaje  de estudiantes que ganarón la beca se ve una diferencia en cluster 2, respecto al 0 y el 5, ademas la dispersión de los datos en este grupo es muy baja, por lo que se concluye que es un grupo homogéneo.
 
 ![Analisis clusters 0, 2 y 5 de porcentaje de graduados medio](analisis7Money.png){#fig-dinero-1}
 
@@ -493,7 +495,7 @@ Para la variable que representa el porcentaje  de estudiantes que ganarón la be
 *   **Cluster 4:** Compuesto únicamente por universidades públicas y privadas sin ánimo de lucro (siendo mayor la cantidad de éstas ultimas en el cluster) las cuales ofertan las carreras únicamente de forma presencial. Como en el cluster 3 tiene un porcentaje similar de estudiantes con préstamos federales a los clusters 2 y 5, pero es el cluster con universidades cuyos estudiantes tienen la mayor deuda media, ocasionado probablemente también porque es el de menor porcentaje de estudiantes con beca Pell Grants. Respecto al porcentaje de universidades graduados en sus universidades, ocurre aproximadamente lo mismo que en el cluster 3.
 *   **Cluster 5:** Compuesto únicamente por universidades privadas sin ánimo de lucro, las universidades dentro de este grupo son similares en cuanto a su no oferta de las carreras como los clusters 0 y 2, sin embargo tienen un poco más de oferta en los campos de computación y matemáticas en las modalidades presencial y virtual que estos 2 clusters anteriormente mencionados. Su deuda media y porcentaje de estudiantes con préstamo federal son similares a los de cluster 1 y 4 respectivamente y es el tercero en cuanto a mayor media de porcentaje de estudiantes con becas Pell Grants. Destaca en que es el cluaster con mayor porcentaje de graduados en ingeniería y en general es el tercero con mayor porcentaje de estudiantes graduados para las demás carreras.
 
-## Concluciones
+## Conclusiones
 
 *   A quienes estén interesados en las carreras de computación, ingeniería, ingeniería y tecnología, y matemáticas se les recomienda poner especial atención a las clusters 1, 3 y 4, siendo 1 y 4 recomendados si la persona prefiere una educación presencial y el 3 si prefiere una educación virtual.
 *   Si se está interesado en obtener una beca Pell Grant poner atención a las universidades del cluster 1 y 2, que tienen mayor porcentaje medio de estudiantes con esta beca.
@@ -530,6 +532,6 @@ Para el desarrollo de este proyecto los siguientes pasos:
 1)	Comprensión del problema de desigualdad de educación superior que tiene el país.
 2)	Recolección de los datos y entendimiento de cada una de sus columnas.
 1)	Exploración, depuración y análisis descriptivo de la tablas
-2)	Planteamiento de los diferentes cluster según las características similares que presentan las universidades.
+2)	Planteamiento de los diferentes clusters según las características similares que presentan las universidades.
 3)	Análisis de los resultados obtenidos en el paso anterior.
 4)	Conclusiones y recomendaciones.
