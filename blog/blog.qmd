@@ -193,7 +193,7 @@ utiles_por_porcentaje(datos_raw,interes,0.3)
 
 Por lo que se procede con una imputación reemplazando con la mediana y la moda los valores nulos en columnas numéricas y categóricas respectivamente,  lo que nos deja con un conjunto de datos de 7804 observaciones y 14 columnas.
 
-Además de ello se procederá a hacer un One Hot Encoding a aquellas variables numéricas.
+Además de ello se procederá a hacer un One Hot Encoding a aquellas variables categóricas.
 
 ### Análisis inicial de datos
 
@@ -379,7 +379,7 @@ plt.show()
 
 ### Entrenamiento del modelo
 
-Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. 
+Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. Usaremos el algoritmo de agrupación K-Means para ello.
 
 Entrenado el modelo en @fig-kmeans-1 se podrán notar las observaciones en un plano tridimensional donde se comparan las variables "DEBT_MDN", "PCTFLOAN" y "PCTPELL" de cada observación y donde el color representa el cluster al que pertenece cada observación.
 
