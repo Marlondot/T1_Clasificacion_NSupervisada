@@ -1,15 +1,15 @@
 # T1_Clasificacion_NSupervisada
 
 Autores: 
-- name: Daniel Daza Macias
+-  Daniel Daza Macias
     email: dadazam@unal.edu.co
-- name: Daniel Santiago Cadavid Montoya
+-  Daniel Santiago Cadavid Montoya
     email: dcadavid@unal.edu.co
-- name: Jose Daniel Bustamante Arango
+-  Jose Daniel Bustamante Arango
     email: jobustamantea@unal.edu.co
-- name: Marlon Calle Areiza
+-  Marlon Calle Areiza
     email: mcallea@unal.edu.co
-- name: Ronald Gabriel Palencia
+-  Ronald Gabriel Palencia
     email: ropalencia@unal.edu.co
 
 Repositorio principal del trabajo 1 de clasificación supervisada para la materia: Técnicas en Aprendizaje Estadístico.
