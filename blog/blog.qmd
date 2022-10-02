@@ -1,5 +1,6 @@
 ---
 title: "Segmentación de universidades en EEUU con énfasis en estudiantes de areas relacionadas a la computación"
+bibliography: references.bib
 author:
   - name: Daniel Daza Macias
     email: dadazam@unal.edu.co
@@ -20,21 +21,23 @@ theme:
           light: flatly
           dark: darkly
 toc: true
+appendix-style: default
 ---
 
 ## Introducción
 
 El siguiente trabajo tiene como objetivo ofrecer información sobre segmentos de universidades a estudiantes que estén interesados en pregados relacionados con la computación, ingeniería, ingeniería y tecnología o matemáticas.
 
-Para realizar la segmentación utilizamos la base de datos encontrada en el link: https://data.world/exercises/cluster-analysis-exercise-2
+Para realizar la segmentación utilizamos la base de datos proporcionada por @DataWebsite.
 
 ## Importe y análisis de datos
 
 A continuación procedemos a hacer el cargo de datos considerando aquellos suprimidos por privacidad como NaN: 
 
 ```{python}
-#| label: tbl-import-presentacion-inicial
 #| tbl-cap: Datos iniciales
+#| label: tbl-import-presentacion-inicial
+
 
 import numpy as np
 import pandas as pd
@@ -48,6 +51,7 @@ from sklearn.metrics import pairwise_distances_argmin_min
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram, ward
 
+pd.set_option("display.max_columns", 4)
 #TODO: Explicar valores Nan
 #TODO: Revisar el tema de la low_memory=False
 datos_raw = pd.read_csv('CollegeScorecard.csv', na_values='PrivacySuppressed',low_memory=False)
@@ -60,6 +64,9 @@ Como se puede ver en @tbl-import-presentacion-inicial la base de datos contiene 
 Para comenzar y como nuestro interés de acuerdo al objetivo es tener la mayor cantidad de datos sin imputar relacionados a nuestro objetivo procederemos a seleccionar y estudiar las columnas cuyo porcentaje de nulos sea menor al (30%)
 
 ```{python}
+#| tbl-cap: Analisis porcentaje de nulos
+#| label: tbl-per-null-1
+pd.set_option("display.max_columns", 15)
 
 def verificar_variables(nombre_archivo):
   path = f'/content/gdrive/Shareddrives/TAE/{nombre_archivo}'
@@ -89,8 +96,8 @@ De acuerdo a un análisis manual y dado el objetivo planteado inicialmente se co
 
 
 ```{python}
-#| label: tbl-col-iniciales
 #| tbl-cap: Columnas iniciales a analizar
+#| label: tbl-col-iniciales
 
 
 def_var_dict={
@@ -322,7 +329,7 @@ Como se puede ver en @tbl-princ-component-1 poco más del 95% de la varianza com
 
 ### Cantidad de clusters
 
-Para proceder con el desarrollo del modelo se comenzará escogiendo la cantidad de clusters o grupos en los que se segmentarán los datos. Para ello se hará un análisis de Elbow Curve:
+Para proceder con el desarrollo del modelo se comenzará escogiendo la cantidad de clusters o grupos en los que se segmentarán los datos. Para ello se hará un análisis de Elbow Curve cuya inercia es obtenida al ajustar los datos al algoritmo K-Means:
 
 ```{python}
 #| label: fig-elbow-1
@@ -355,7 +362,9 @@ elbow_curve(np.array(imputados_OneHot))
 
 En @fig-elbow-1 se puede notar que la pendiente de inercia de un cluster a otro comienza a ser menor desde que hay 6 cluster por lo que se concluye esta como la cantidad ideal.
 
-Por otra parte en @fig-dendrogram-1 se puede notar la agrupación en 6 grupos a través de agrupación aglomerativa con distancia ward en un dendrograma
+#### Clustering aglomerativo {.appendix} 
+
+Si quisieramos usar clustering aglomerativo en @fig-dendrogram-1 se puede notar la agrupación en 6 grupos a través de agrupación aglomerativa con distancia ward en un dendrograma.
 
 ```{python}
 #| label: fig-dendrogram-1
@@ -379,7 +388,7 @@ plt.show()
 
 ### Entrenamiento del modelo
 
-Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. Usaremos el algoritmo de agrupación K-Means para ello.
+Ahora que tenemos la cantidad de clusters seleccionada se procederá a entrenar el modelo. Usaremos el algoritmo de agrupación K-Means para ello. Por otra parte en el apéndice se ahonda un poco más presentando la agrupación con clustering aglomerativo.
 
 Entrenado el modelo en @fig-kmeans-1 se podrán notar las observaciones en un plano tridimensional donde se comparan las variables "DEBT_MDN", "PCTFLOAN" y "PCTPELL" de cada observación y donde el color representa el cluster al que pertenece cada observación.
 
@@ -535,3 +544,13 @@ Para el desarrollo de este proyecto los siguientes pasos:
 2)	Planteamiento de los diferentes clusters según las características similares que presentan las universidades.
 3)	Análisis de los resultados obtenidos en el paso anterior.
 4)	Conclusiones y recomendaciones.
+
+---
+nocite: |
+  @*
+---
+
+## Referencias
+
+::: {#refs}
+:::
